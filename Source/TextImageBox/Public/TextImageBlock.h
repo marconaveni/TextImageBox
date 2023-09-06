@@ -34,6 +34,7 @@ class USpacer;
 class UTextBlock;
 class UWrapBox;
 class UImage;
+class URetainerBox;
 
 /**
  * A Text Block Enchanted 
@@ -59,6 +60,10 @@ protected:
 	UTextBlock* TextBlock;
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget), Category = "TextImageBlock|Components")
 	UWrapBox* WrapBox;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget), Category = "TextImageBlock|Components")
+	URetainerBox* RetainerBox;
+	UPROPERTY()
+	FTimerHandle TimerHandle;
 
 public:
 
@@ -69,6 +74,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values")
 	FText Text;
 	/** The image text to display */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values")
+	bool bRetainerImageText;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values")
 	bool bImageDefault;
 	/** The minimum desired size for the text */
@@ -86,6 +93,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Text", DisplayName="Style")
 	FTextStyle DefaultTextStyle;
+
+
 
 	/**
 	*  Get a Font from path
@@ -145,16 +154,21 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
 	void SetMinDesiredWidth(float InMinDesiredWidth);
 
+	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
+	void UpdateRender();
+
 protected:
 
 	/** Set Texture to UImage with size scale*/
 	void SetTexture(UImage* Image, UTexture2D* NewTexture);
 
+
 public:
+
+	void UpdateText();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnUpdateText();
 
-	void UpdateText();
 
 };

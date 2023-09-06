@@ -9,6 +9,7 @@
 #include "Components/HorizontalBox.h"
 #include "Components/Spacer.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/RetainerBox.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetTree.h"
 #include "HAL/PlatformFileManager.h"
@@ -17,9 +18,10 @@ UTextImageBlock::UTextImageBlock(const FObjectInitializer& ObjectInitializer) : 
 {
 	LettersImages.SetNum(255);
 	Size = 24.0f;
+	MinDesiredWidth = 0.0f;
 	bImageDefault = false;
 	bWrap = false;
-	MinDesiredWidth = 0.0f;
+	bRetainerImageText = false;
 }
 
 void UTextImageBlock::NativePreConstruct()
@@ -34,6 +36,7 @@ void UTextImageBlock::NativePreConstruct()
 	DefaultToImageText(bImageDefault);
 	SetTextStyle(DefaultTextStyle);
 	SetMinDesiredWidth(MinDesiredWidth);
+	RetainerBox->SetRetainRendering(bRetainerImageText);
 
 }
 
@@ -96,6 +99,10 @@ void UTextImageBlock::SetText(const FString NewText)
 			}
 		}
 	}
+	if (RetainerBox)
+	{
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UTextImageBlock::UpdateRender, GetWorld()->GetDeltaSeconds(), false, GetWorld()->GetDeltaSeconds());
+	}
 }
 
 void UTextImageBlock::SetFText(const FText NewText)
@@ -110,12 +117,12 @@ void UTextImageBlock::DefaultToImageText(bool bEnableImage)
 
 	if (bImageDefault)
 	{
-		WrapBox->SetVisibility(ESlateVisibility::Visible);
+		RetainerBox->SetVisibility(ESlateVisibility::Visible);
 		TextBlock->SetVisibility(ESlateVisibility::Collapsed);
 	}
 	else
 	{
-		WrapBox->SetVisibility(ESlateVisibility::Collapsed);
+		RetainerBox->SetVisibility(ESlateVisibility::Collapsed);
 		TextBlock->SetVisibility(ESlateVisibility::Visible);
 	}
 }
@@ -142,6 +149,11 @@ void UTextImageBlock::SetMinDesiredWidth(float InMinDesiredWidth)
 	}
 }
 
+void UTextImageBlock::UpdateRender()
+{
+	RetainerBox->RequestRender();
+}
+
 void UTextImageBlock::SetTexture(UImage* Image, UTexture2D* NewTexture)
 {
 	if (NewTexture == nullptr) return;
@@ -157,7 +169,7 @@ void UTextImageBlock::SetTexture(UImage* Image, UTexture2D* NewTexture)
 
 void UTextImageBlock::UpdateText()
 {
-	if(!Text.IsEmpty())
+	if (!Text.IsEmpty())
 	{
 		SetFText(Text);
 		UE_LOG(LogTemp, Warning, TEXT("Updated Text Language %s"), *this->GetName());
