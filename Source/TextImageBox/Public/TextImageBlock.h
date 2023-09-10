@@ -71,19 +71,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values")
 	TEnumAsByte<ETextJustify::Type>Justification;
 	/** The text to display */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values")
-	FText Text;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values", DisplayName = "Text")
+	FText CurrentText;
 	/** The image text to display */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextImageBlock|Default Values")
+	bool bImageDefault;
+	/** Wrap text line*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "TextImageBlock|Default Values")
+	bool bWrap;
+	/** enable Retainer box*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values")
 	bool bRetainerImageText;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values")
-	bool bImageDefault;
 	/** The minimum desired size for the text */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values")
 	float MinDesiredWidth;
-	/** Wrap text line*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values")
-	bool bWrap;
 	/** Array Textures letters */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Text")
 	TArray<UTexture2D*> LettersImages;
@@ -114,24 +115,25 @@ public:
 
 	/**
 	*  Write new text
-	*  @param NewText set new text with a String
-	*/
-	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions", DisplayName="Set Text With String")
-	void SetText(const FString NewText);
-
-	/**
-	*  Write new text
 	*  @param NewText set new text with text localization
 	*/
-	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions", DisplayName = "Set Text With Text")
+	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions", DisplayName="Set Text")
+	void SetText(const FText NewText);
+
+	/**
+	*  Write DeprecatedFunction 
+	*  @param NewText set new text with text localization
+	*/
+	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions", DisplayName = "Set Text With Text", meta = (DeprecatedFunction) )
 	void SetFText(const FText NewText);
 
 	/**
 	*  Define if a text is default or image
 	*  @param bEnableImage true image text false default text
+	*  @param bUpdate force update text
 	*/
 	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions", DisplayName = "Change DefaultText To ImageText")
-	void DefaultToImageText(bool bEnableImage);
+	void DefaultToImageText(bool bEnableImage, bool bUpdate = false);
 
 	/**
 	*  Define new style text
@@ -154,6 +156,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
 	void SetMinDesiredWidth(float InMinDesiredWidth);
 
+
 	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
 	void UpdateRender();
 
@@ -165,10 +168,12 @@ protected:
 
 public:
 
+	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
 	void UpdateText();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnUpdateText();
 
-
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnTextChange();
 };

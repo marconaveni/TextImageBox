@@ -29,14 +29,13 @@ void UTextImageBlock::NativePreConstruct()
 	Super::NativePreConstruct();
 
 	DefaultTextStyle.bWrap = bWrap;
+	RetainerBox->SetRetainRendering(bRetainerImageText);
 
 	DefaultToImageText(bImageDefault);
-	SetFText(Text);
 	SetJustification(Justification);
-	DefaultToImageText(bImageDefault);
 	SetTextStyle(DefaultTextStyle);
 	SetMinDesiredWidth(MinDesiredWidth);
-	RetainerBox->SetRetainRendering(bRetainerImageText);
+	SetText(CurrentText);
 
 }
 
@@ -71,48 +70,54 @@ void UTextImageBlock::SetJustification(ETextJustify::Type Justify)
 	TextBlock->SetJustification(Justify);
 }
 
-void UTextImageBlock::SetText(const FString NewText)
+void UTextImageBlock::SetText(const FText NewText)
 {
-	WrapBox->ClearChildren();
+	CurrentText = NewText;
 
 	if (!bImageDefault)
 	{
-		TextBlock->SetText(FText::FromString(NewText));
-		return;
+		TextBlock->SetText(CurrentText);
+		return OnTextChange();
 	}
+
+	WrapBox->ClearChildren();
+	const FString StringText = CurrentText.ToString();
 
 	UHorizontalBox* Box = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
 	WrapBox->AddChild(Box);
 
-	for (int32 i = 0; i < NewText.Len(); i++)
+	for (int32 i = 0; i < StringText.Len(); i++)
 	{
-		if (LettersImages.IsValidIndex(NewText[i]))
+		if (LettersImages.IsValidIndex(StringText[i]))
 		{
 			UImage* Image = WidgetTree->ConstructWidget<UImage>(UImage::StaticClass());
-			SetTexture(Image, LettersImages[NewText[i]]);
+			SetTexture(Image, LettersImages[StringText[i]]);
 			Box->AddChild(Image);
 
-			if (NewText[i] == 32 && bWrap)
+			if (StringText[i] == 32 && bWrap)
 			{
 				Box = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
 				WrapBox->AddChild(Box);
 			}
 		}
 	}
+
 	if (RetainerBox)
 	{
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UTextImageBlock::UpdateRender, GetWorld()->GetDeltaSeconds(), false, GetWorld()->GetDeltaSeconds());
 	}
+
+	return OnTextChange();
 }
 
 void UTextImageBlock::SetFText(const FText NewText)
 {
-	Text = NewText;
-	SetText(NewText.ToString());
+	SetText(NewText);
 }
 
-void UTextImageBlock::DefaultToImageText(bool bEnableImage)
+void UTextImageBlock::DefaultToImageText(bool bEnableImage, bool bUpdate)
 {
+
 	bImageDefault = bEnableImage;
 
 	if (bImageDefault)
@@ -124,6 +129,11 @@ void UTextImageBlock::DefaultToImageText(bool bEnableImage)
 	{
 		RetainerBox->SetVisibility(ESlateVisibility::Collapsed);
 		TextBlock->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	if(bUpdate)
+	{
+		UpdateText();
 	}
 }
 
@@ -169,10 +179,6 @@ void UTextImageBlock::SetTexture(UImage* Image, UTexture2D* NewTexture)
 
 void UTextImageBlock::UpdateText()
 {
-	if (!Text.IsEmpty())
-	{
-		SetFText(Text);
-		UE_LOG(LogTemp, Warning, TEXT("Updated Text Language %s"), *this->GetName());
-	}
+	SetText(CurrentText);
 	OnUpdateText();
 }
