@@ -160,6 +160,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
 	void UpdateRender();
 
+	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
+	void SetRetainRendering(bool bRetainer);
+
 protected:
 
 	/** Set Texture to UImage with size scale*/

@@ -29,8 +29,8 @@ void UTextImageBlock::NativePreConstruct()
 	Super::NativePreConstruct();
 
 	DefaultTextStyle.bWrap = bWrap;
-	RetainerBox->SetRetainRendering(bRetainerImageText);
 
+	SetRetainRendering(bRetainerImageText);
 	DefaultToImageText(bImageDefault);
 	SetJustification(Justification);
 	SetTextStyle(DefaultTextStyle);
@@ -162,6 +162,12 @@ void UTextImageBlock::SetMinDesiredWidth(float InMinDesiredWidth)
 void UTextImageBlock::UpdateRender()
 {
 	RetainerBox->RequestRender();
+}
+
+void UTextImageBlock::SetRetainRendering(bool bRetainer)
+{
+	RetainerBox->SetRetainRendering(bRetainer);
+	UpdateRender();
 }
 
 void UTextImageBlock::SetTexture(UImage* Image, UTexture2D* NewTexture)
