@@ -159,6 +159,11 @@ void UTextImageBlock::SetMinDesiredWidth(float InMinDesiredWidth)
 	}
 }
 
+void UTextImageBlock::SetColorText(const FSlateColor NewColor)
+{
+	TextBlock->SetColorAndOpacity(NewColor);
+}
+
 void UTextImageBlock::UpdateRender()
 {
 	RetainerBox->RequestRender();

@@ -45,7 +45,6 @@ class TEXTIMAGEBOX_API UTextImageBlock : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-
 	UTextImageBlock(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NativePreConstruct() override;
@@ -66,10 +65,9 @@ protected:
 	FTimerHandle TimerHandle;
 
 public:
-
 	/** alignment text  */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values")
-	TEnumAsByte<ETextJustify::Type>Justification;
+	TEnumAsByte<ETextJustify::Type> Justification;
 	/** The text to display */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Default Values", DisplayName = "Text")
 	FText CurrentText;
@@ -94,7 +92,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TextImageBlock|Text", DisplayName="Style")
 	FTextStyle DefaultTextStyle;
-
 
 
 	/**
@@ -124,7 +121,7 @@ public:
 	*  Write DeprecatedFunction 
 	*  @param NewText set new text with text localization
 	*/
-	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions", DisplayName = "Set Text With Text", meta = (DeprecatedFunction) )
+	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions", DisplayName = "Set Text With Text", meta = (DeprecatedFunction))
 	void SetFText(const FText NewText);
 
 	/**
@@ -156,6 +153,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
 	void SetMinDesiredWidth(float InMinDesiredWidth);
 
+	/**
+	 *  Set new color default text
+	 *  @param NewColor new color
+	 */
+	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
+	void SetColorText(FSlateColor NewColor);
 
 	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
 	void UpdateRender();
@@ -164,13 +167,10 @@ public:
 	void SetRetainRendering(bool bRetainer);
 
 protected:
-
 	/** Set Texture to UImage with size scale*/
 	void SetTexture(UImage* Image, UTexture2D* NewTexture);
 
-
 public:
-
 	UFUNCTION(BlueprintCallable, Category = "TextImageBlock|Functions")
 	void UpdateText();
 
